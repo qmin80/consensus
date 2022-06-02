@@ -32,7 +32,8 @@ def get_validator_votes():
     height = STATE['result']['round_state']['height']
     step = STATE['result']['round_state']['step']
     chain = get_chain_id()
-    for r_ound in votes:
+
+    for r_ound in votes:        
         if float(r_ound['precommits_bit_array'].split('=')[-1].strip()) <= 0.66 and float(r_ound['precommits_bit_array'].split('=')[-1].strip()) > 0:
             print(F"\nChain-id: {chain}\n"
                   f"Height: {height} Round: {r_ound['round']} "
@@ -48,20 +49,20 @@ def get_validator_votes():
         elif float(r_ound['prevotes_bit_array'].split('=')[-1].strip()) <= 0.66 and float(r_ound['prevotes_bit_array'].split('=')[-1].strip()) > 0:
             print(F"\nChain-id: {chain}\nHeight: {height} Round: {r_ound['round']} step: {step}\nprevotes_bit_array: {r_ound['prevotes_bit_array'].split('} ')[-1]}")
 
-            for precommit in r_ound['prevotes']:
+            for prevote in r_ound['prevotes']:
                 try:
-                    validator_votes.append(precommit.split('@')[0].split(':')[1].split(' ')[0])
+                    validator_votes.append(prevote.split('@')[0].split(':')[1].split(' ')[0])
                 except IndexError:
-                    validator_votes.append(precommit)
+                    validator_votes.append(prevote)
 
     if len(validator_votes) == 0:
         commit_votes = STATE['result']['round_state']['last_commit']
         height = STATE['result']['round_state']['height']
 
-        if float(commit_votes['votes_bit_array'].split('=')[-1].strip()) > 0.66 and float(commit_votes['votes_bit_array'].split('=')[-1].strip()) > 0:
+        if float(commit_votes['votes_bit_array'].split('=')[-1].strip()) > 0.66 :
             print(F"\nChain-id: {chain}\nHeight: {height} Round: {r_ound['round']} step: {step}\nvotes_bit_array: {commit_votes['votes_bit_array'].split('} ')[-1]}")
-        for commit_vote in commit_votes['votes']:
 
+        for commit_vote in commit_votes['votes']:
             try:
                 validator_votes.append(commit_vote.split('@')[0].split(':')[1].split(' ')[0])
             except IndexError:
@@ -86,8 +87,8 @@ def get_bonded():
 
 def strip_emoji_non_ascii(moniker):
     # moniker = emoji.replace_emoji(moniker, replace='')
-    moniker = "".join([letter for letter in moniker if letter.isascii()])
-    return moniker[:15].strip().lstrip()
+    moniker = "".join([letter for letter in moniker if letter.isascii()])[:15].strip().lstrip()
+    return moniker if moniker != "" else "Non_Ascii_Name"
 
 
 def get_validators_rest():
@@ -213,6 +214,7 @@ def main(STATE):
 
     print(f"Online: {online_vals}/{total_validators}\n")
     get_evidence(STATE['result']['round_state']['height'])
+
     result = colorize_output(validators)
     print(calculate_colums(result))
 
