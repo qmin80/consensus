@@ -1,6 +1,6 @@
 #  Github https://github.com/Northa
 
-from urllib import request
+from urllib.request import Request, urlopen
 import math
 from sys import exit
 from json import loads
@@ -11,17 +11,18 @@ ERR_MSG = f"\033[91m[ERR] API endpoint unreachable: api\n" \
           f"Bugreports Discord: Yep++#9963\033[0m"
 
 # default ports
-REST = "http://127.0.0.1:1317"
-RPC = "http://127.0.0.1:26657"
+REST = "https://lcd-juno.itastakers.com"
+RPC = "https://rpc-juno.itastakers.com"
 
 
 def handle_request(api: str, pattern: str):
     try:
-
-        response = loads(request.urlopen(f"{api}/{pattern}").read())
+        requestUrl = Request(f"{api}/{pattern}", headers={'User-Agent': 'Mozilla/5.0'})
+        response = loads(urlopen(requestUrl).read())
         return response if response is not None else exit(ERR_MSG.replace('api', api))
 
-    except Exception:
+    except Exception as e:
+        print(e)
         exit(ERR_MSG.replace('api', api))
 
 
